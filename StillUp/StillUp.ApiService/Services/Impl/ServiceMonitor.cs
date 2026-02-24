@@ -1,15 +1,21 @@
+using Docker.DotNet.Models;
+using StillUp.ApiService.Entities;
+using StillUp.ApiService.Repositories;
+using StillUp.ApiService.Services;
+
 namespace StillUp.ApiService.Services.Impl;
 
-public class ServiceMonitor(IDockerService dockerService, TimescaleContext timescaleContext): IServiceMonitor
+public class ServiceMonitor(IDockerService dockerService, IMonitorEntryRepository monitorRepository, MonitorChannel monitorChannel): IServiceMonitor
 {
     private readonly IDockerService _dockerService = dockerService;
-    private readonly TimescaleContext _timescaleContext = timescaleContext;
+    private readonly IMonitorEntryRepository _monitorRepository = monitorRepository;
+    private readonly MonitorChannel _monitorChannel = monitorChannel;
 
     public async Task MonitorService(CancellationToken ct)
     {
         try
         {
-            var containers = await _dockerService.ListContainersAsync(ct);
+            IList<ContainerListResponse> containers = await _dockerService.ListContainersAsync(ct);
             IEnumerable<Monitor> monitors = containers
                 .Select(x =>
                 {
@@ -31,27 +37,18 @@ public class ServiceMonitor(IDockerService dockerService, TimescaleContext times
                 
                 HttpClient httpClient = new();
                 httpClient.BaseAddress = new Uri(monitor.url);
-                var res = await httpClient.GetAsync("/", ct);
+                HttpResponseMessage res = await httpClient.GetAsync("/", ct);
             
                 Console.WriteLine($"Pinged {monitor.name} at {monitor.url} at {TimeProvider.System.GetLocalNow()} with res: {res.StatusCode}");
-                _timescaleContext.MonitorEntries.Add(new MonitorEntry(monitor.name, DateTime.UtcNow, monitor.url, res.StatusCode.ToString() ));
-                await _timescaleContext.SaveChangesAsync(ct);
+                MonitorEntry entry = new(monitor.name, DateTime.UtcNow, monitor.url, res.StatusCode.ToString());
+                await _monitorRepository.InsertAsync(entry, ct);
+                await _monitorChannel.Writer.WriteAsync(entry, ct);
             }
         }
         catch (Exception e)
         {
             Console.WriteLine(e);
         }
-        
-        
-        /**
-         * getkey stillup.name
-         * getkey stillup.url
-         * {
-         *  servicename,
-         *  url
-         * }
-         */
     }
 
     private record Monitor(string name, string url);

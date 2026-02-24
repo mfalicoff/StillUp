@@ -10,8 +10,8 @@ public class MonitorWorker(IServiceScopeFactory factory): BackgroundService
     {
         while (true)
         {
-            var scope = _factory.CreateAsyncScope();
-            var monitor = scope.ServiceProvider.GetRequiredService<IServiceMonitor>();
+            AsyncServiceScope scope = _factory.CreateAsyncScope();
+            IServiceMonitor monitor = scope.ServiceProvider.GetRequiredService<IServiceMonitor>();
             await monitor.MonitorService(stoppingToken);
             
             await Task.Delay(5000, stoppingToken);

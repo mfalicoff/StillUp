@@ -1,8 +1,7 @@
-using Docker.DotNet;
 using Docker.DotNet.Models;
 using StillUp.ApiService.Clients;
 
-namespace StillUp.ApiService.Services;
+namespace StillUp.ApiService.Services.Impl;
 
 public class DockerService(DockerClientWrapper clientWrapper): IDockerService
 {
