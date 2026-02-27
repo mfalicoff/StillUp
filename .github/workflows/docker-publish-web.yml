@@ -10,7 +10,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: stillup/web
+  IMAGE_NAME: mfalicoff/stillup/web
 
 jobs:
   build-and-push-image:
