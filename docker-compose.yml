@@ -1,0 +1,40 @@
+services:
+  stillup-db:
+    image: timescale/timescaledb:latest-pg17
+    environment:
+      POSTGRES_DB: mydb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+    volumes:
+      - db_data:/var/lib/postgresql/data
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d mydb"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  stillup-api:
+    image: stillup/api:latest
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ConnectionStrings__mydb: Host=stillup-db;Port=5432;Database=mydb;Username=postgres;Password=${POSTGRES_PASSWORD:-postgres}
+      Ntfy__BaseUrl: ${NTFY_BASE_URL:-https://ntfy.sh}
+      Ntfy__Topic: ${NTFY_TOPIC:-stillup-alerts}
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    depends_on:
+      stillup-db:
+        condition: service_healthy
+
+  stillup-web:
+    image: stillup/web:latest
+    environment:
+      PORT: 3000
+    ports:
+      - "3000:3000"
+    depends_on:
+      - stillup-api
+
+volumes:
+  db_data:
