@@ -26,4 +26,11 @@
     </Content>
   </ItemGroup>
 
+  <!-- Workaround for https://github.com/dotnet/msbuild/issues/12546:
+       EF Core design-time targets create a bin\Debug directory (with a literal backslash
+       in the name on Linux) which causes MSBuild's resx glob to fail with MSB3552. -->
+  <ItemGroup>
+    <EmbeddedResource Remove="**/*.resx" />
+  </ItemGroup>
+
 </Project>
