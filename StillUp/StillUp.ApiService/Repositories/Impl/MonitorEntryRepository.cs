@@ -35,4 +35,13 @@ public class MonitorEntryRepository(TimescaleContext context) : IMonitorEntryRep
 
         return await query.OrderByDescending(e => e.Date).ToListAsync(ct);
     }
+
+    public async Task<IEnumerable<string>> GetDistinctNamesAsync(CancellationToken ct = default)
+    {
+        return await _context.MonitorEntries
+            .Select(e => e.Name)
+            .Distinct()
+            .OrderBy(n => n)
+            .ToListAsync(ct);
+    }
 }

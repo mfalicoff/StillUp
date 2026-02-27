@@ -9,4 +9,6 @@ public interface IMonitorEntryRepository
     Task<IEnumerable<MonitorEntry>> GetRecentEntriesAsync(string serviceName, int count = 100, CancellationToken ct = default);
     
     Task<IEnumerable<MonitorEntry>> GetEntriesForLastHoursAsync(int hours, string? serviceName = null, CancellationToken ct = default);
+
+    Task<IEnumerable<string>> GetDistinctNamesAsync(CancellationToken ct = default);
 }

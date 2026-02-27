@@ -12,7 +12,20 @@ public class GetRecentMonitorDataRequest
 
 public class GetRecentMonitorDataResponse
 {
-    public required List<MonitorEntry> Entries { get; set; }
+    public GetRecentMonitorDataResponse(List<MonitorEntry> data)
+    {
+        Dictionary<string, List<MonitorEntry>> entries = [];
+
+        IEnumerable<(string Key, List<MonitorEntry>)> grouping = data.GroupBy(x => x.Name).Select(x => (x.Key, x.ToList()));
+        foreach ((string Key, List<MonitorEntry>) valueTuple in grouping)
+        {
+            entries.Add(valueTuple.Key, valueTuple.Item2);
+        }
+
+        Entries = entries;
+    }
+
+    public Dictionary<string, List<MonitorEntry>> Entries { get; set; }
 }
 
 public class GetRecentMonitorDataEndpoint(IMonitorEntryRepository repository) : Endpoint<GetRecentMonitorDataRequest, GetRecentMonitorDataResponse>
@@ -30,9 +43,6 @@ public class GetRecentMonitorDataEndpoint(IMonitorEntryRepository repository) : 
         int hoursToFetch = req.Hours > 0 ? req.Hours : 1;
         IEnumerable<MonitorEntry> data = await _repository.GetEntriesForLastHoursAsync(hoursToFetch, req.ServiceName, ct);
         
-        await Send.OkAsync(new GetRecentMonitorDataResponse 
-        { 
-            Entries = data.ToList() 
-        }, ct);
+        await Send.OkAsync(new GetRecentMonitorDataResponse(data.ToList()), ct);
     }
 }
