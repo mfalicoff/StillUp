@@ -8,6 +8,7 @@ namespace StillUp.ApiService.Data;
 public class TimescaleContext(DbContextOptions<TimescaleContext> options) : DbContext(options)
 {
     public DbSet<MonitorEntry> MonitorEntries { get; set; }
+    public DbSet<MonitorState> MonitorStates { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -15,5 +16,9 @@ public class TimescaleContext(DbContextOptions<TimescaleContext> options) : DbCo
 
         modelBuilder.Entity<MonitorEntry>()
             .IsHypertable(x => x.Date);
+
+        modelBuilder.Entity<MonitorState>()
+            .HasIndex(s => s.Name)
+            .IsUnique();
     }
 }

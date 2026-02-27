@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using StillUp.ApiService.Data;
@@ -11,9 +12,11 @@ using StillUp.ApiService.Data;
 namespace StillUp.ApiService.Migrations
 {
     [DbContext(typeof(TimescaleContext))]
-    partial class TimescaleContextModelSnapshot : ModelSnapshot
+    [Migration("20260227210001_AddMonitorState")]
+    partial class AddMonitorState
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

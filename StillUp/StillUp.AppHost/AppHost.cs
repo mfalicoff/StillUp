@@ -3,7 +3,7 @@ IDistributedApplicationBuilder builder = DistributedApplication.CreateBuilder(ar
 IResourceBuilder<PostgresServerResource> postgres = builder.AddPostgres("postgres")
     .WithImage("timescale/timescaledb", "latest-pg17")  // or latest-pg15, pg17
     .WithImageRegistry("docker.io")
-    .WithPgAdmin(); // optional
+    .WithPgWeb(); // optional
 
 IResourceBuilder<PostgresDatabaseResource> db = postgres.AddDatabase("mydb");
 

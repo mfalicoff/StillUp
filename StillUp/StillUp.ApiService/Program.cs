@@ -21,6 +21,7 @@ builder.Services.AddFastEndpoints();
 builder.Services.AddDockerServices();
 builder.Services.AddRepositories();
 builder.Services.AddMonitors();
+builder.Services.AddNotifications(builder.Configuration);
 builder.Services.AddHostedService<MonitorWorker>();
 
 builder.AddNpgsqlDbContext<TimescaleContext>(connectionName: "mydb", configureDbContextOptions: options =>
