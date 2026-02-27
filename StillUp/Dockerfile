@@ -4,6 +4,7 @@ WORKDIR /src
 
 # Restore dependencies first for better layer caching
 COPY ["StillUp.ApiService/StillUp.ApiService.csproj", "StillUp.ApiService/"]
+COPY ["StillUp.ServiceDefaults/StillUp.ServiceDefaults.csproj", "StillUp.ServiceDefaults/"]
 RUN dotnet restore "StillUp.ApiService/StillUp.ApiService.csproj"
 
 COPY . .
