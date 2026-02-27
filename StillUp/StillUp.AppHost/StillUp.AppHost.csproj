@@ -9,7 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\StillUp.ApiService\StillUp.ApiService.csproj" />
+    <ProjectReference Include="../StillUp.ApiService\StillUp.ApiService.csproj" />
   </ItemGroup>
 
   <ItemGroup>
